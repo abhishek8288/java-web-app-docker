@@ -10,9 +10,8 @@ node{
 sh "${mavenCMD} clean package"
     } 
 
-    
-    stage('Build Docker Image'){
-        sh 'docker build -t dockerhandson/java-web-app .'
+stage("Build Dokcer Image") {
+sh "docker build -t abhishek/javawebapp:${buildNumber} ."
     }
     
     stage('Push Docker Image'){
