@@ -10,7 +10,7 @@ node{
 sh "${mavenCMD} clean package"
     } 
 
-stage("Build Dokcer Image") {
+stage("Build Docker Image") {
 sh "docker build -t sandeep08aws/javawebapp:${buildNumber} ."
     }
     
