@@ -11,7 +11,7 @@ sh "${mavenCMD} clean package"
     } 
 
 stage("Build Docker Image") {
-sh "docker build -t dockerabhishek/java-web-app-docker:${buildNumber} ."
+sh "docker build -t dockerabhishek/java-web-app*.war:${buildNumber} ."
     }
 
     stage('Push Docker Image'){
