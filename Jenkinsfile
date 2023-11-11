@@ -10,10 +10,10 @@ node{
 sh "${mavenCMD} clean package"
     } 
 
-stage("Build Docker Image") {
+stage("Build Dokcer Image") {
 sh "docker build -t sandeep08aws/javawebapp:${buildNumber} ."
     }
-    
+
     stage('Push Docker Image'){
         withCredentials([string(credentialsId: 'Docker_Hub_Pwd', variable: 'Docker_Hub_Pwd')]) {
           sh "docker login -u dockerhandson -p ${Docker_Hub_Pwd}"
