@@ -18,7 +18,7 @@ sh "docker build -t abhishek8288/java-web-app:${6} ."
            withCredentials([string(credentialsId: 'Docker_hub_password', variable: 'Dockerpassword')]) {
           sh "docker login -u abhishek8288 -p ${Dockerpassword}"
         }
-        sh 'docker push abhishek8288/java-web-app:${6}'
+        sh 'docker push abhishek8288/java-web-app:6'
      }
      
       stage('Run Docker Image In Dev Server'){
