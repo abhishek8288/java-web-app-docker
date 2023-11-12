@@ -11,19 +11,19 @@ sh "${mavenCMD} clean package"
     } 
      
 stage("Build Docker Image") {
-sh "docker build -t dockerhandson/java-web-app:${5} ."
+sh "docker build -t abhishek8288/java-web-app:${6} ."
     }
 
     stage('Push Docker Image'){
            withCredentials([string(credentialsId: 'Docker_hub_password', variable: 'Dockerpassword')]) {
           sh "docker login -u abhishek8288 -p ${Dockerpassword}"
         }
-        sh 'docker push abhishek8288/java-web-app:5'
+        sh 'docker push abhishek8288/java-web-app:${6}'
      }
      
       stage('Run Docker Image In Dev Server'){
         
-        def dockerRun = ' docker run  -d -p 8080:8080 --name java-web-app dockerhandson/java-web-app'
+        def dockerRun = ' docker run  -d -p 8080:8080 --name java-web-app abhishek8288/java-web-app'
          
          sshagent(['DOCKER_SERVER']) {
           sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.20.72 docker stop java-web-app || true'
