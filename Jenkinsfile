@@ -15,8 +15,8 @@ sh "docker build -t dockerhandson/java-web-app:${5} ."
     }
 
     stage('Push Docker Image'){
-        withCredentials([string(credentialsId: 'Docker_Hub_Pwd', variable: 'Docker_Hub_Pwd')]) {
-          sh "docker login -u dockerhandson -p ${Docker_Hub_Pwd}"
+   withCredentials([string(credentialsId: 'Docker_hub_password', variable: 'dockerpassword')]) {
+          sh "docker login -u abhishek8288 -p ${Docker_Hub_Pwd}"
         }
         sh 'docker push dockerhandson/java-web-app'
      }
