@@ -1,40 +1,43 @@
-node{
+node {
+    def buildNumber = BUILD_NUMBER
     
-   def buildNumber = BUILD_NUMBER
-   
-    stage("Git CheckOut"){
-        git url: 'https://github.com/MithunTechnologiesDevOps/java-web-app-docker.git',branch: 'master'
+    // Git Checkout
+    stage("Git CheckOut") {
+        git url: 'https://github.com/MithunTechnologiesDevOps/java-web-app-docker.git', branch: 'master'
     }
     
-    stage(" Maven Clean Package"){
-      def mavenHome =  tool name: "Maven-3.6.2", type: "maven"
-      def mavenCMD = "${mavenHome}/bin/mvn"
-      sh "${mavenCMD} clean package"
-    } 
-    
-    stage("Build Dokcer Image") {
-         sh "docker build -t 65.1.107.71:8083/java-web-app:${buildNumber} ."
+    // Maven Clean Package
+    stage("Maven Clean Package") {
+        def mavenHome = tool name: "Maven-3.6.2", type: "maven"
+        def mavenCMD = "${mavenHome}/bin/mvn"
+        sh "${mavenCMD} clean package"
     }
     
+    // Build Docker Image
+    stage("Build Docker Image") {
+        echo "Building Docker image with tag ${buildNumber}"
+        sh "docker build -t 65.1.107.71:8083/java-web-app:${buildNumber} ."
+    }
     
-    stage("Docker Push"){
-        
-       withCredentials([string(credentialsId: 'Docker_Repo_Pwd', variable: 'Docker_Repo_Pwd')]) {
-          sh "docker login -u abhishek8288 -p ${Docker_Repo_Pwd}  65.1.107.71:8083"   
-       }
-       
+    // Docker Login and Push to Repository
+    stage("Docker Push") {
+        withCredentials([string(credentialsId: 'Docker_Repo_Pwd', variable: 'Docker_Repo_Pwd')]) {
+            sh "docker login -u abhishek8288 -p ${Docker_Repo_Pwd} 65.1.107.71:8083"   
+        }
         sh "docker push 65.1.107.71:8083/java-web-app:${buildNumber}"
     }
-
-   stage("Deploy to docker swarm cluster"){
-     sshagent(['Docker_Swarm_Manager_Dev']) {
-      sh 'ssh -o StrictHostKeyChecking=no ubuntu@65.1.107.71 docker service rm javawebapp || true'
-      withCredentials([string(credentialsId: 'Docker_Repo_Pwd', variable: 'Docker_Repo_Pwd')]) {
- 
-       sh "ssh -o StrictHostKeyChecking=no ubuntu@65.1.107.71 docker login -u abhishek8288 -p ${Docker_Repo_Pwd}  65.1.107.71:8083"   
-      }
-      sh "ssh ubuntu@65.1.107.71 docker service create --name javawebapp -p 7070:8080 --replicas 2 --with-registry-auth 65.1.107.71:8083/java-web-app:${buildNumber}"
-    }
-  }
     
+    // Deploy to Docker on Same Server (no SSH needed)
+    stage("Deploy to Docker") {
+        // Remove any existing Docker service (if exists)
+        sh "docker service rm javawebapp || true"
+        
+        // Log in to the Docker registry again for authentication
+        withCredentials([string(credentialsId: 'Docker_Repo_Pwd', variable: 'Docker_Repo_Pwd')]) {
+            sh "docker login -u abhishek8288 -p ${Docker_Repo_Pwd} 65.1.107.71:8083"
+        }
+        
+        // Create a new Docker service on the same server
+        sh "docker service create --name javawebapp -p 7070:8080 --replicas 2 --with-registry-auth 65.1.107.71:8083/java-web-app:${buildNumber}"
+    }
 }
