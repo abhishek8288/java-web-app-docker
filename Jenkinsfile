@@ -7,8 +7,8 @@ node {
         def mavenHome = tool name: "Maven", type: "maven"
         def mavenCMD = "${mavenHome}/bin/mvn"
         sh "${mavenCMD} clean package"
-    } 
-    
+    }
+
     stage("Build Docker Image") {
         sh "docker build -t abhishek8288/java-web-app:6 ."
     }
@@ -20,14 +20,18 @@ node {
         sh 'docker push abhishek8288/java-web-app:6'
     }
      
-    stage('Run Docker Image In Dev Server') {
-        def dockerRun = 'docker run -d -p 8080:8080 --name java-web-app abhishek8288/java-web-app'
-         
-        sshagent(['DOCKER_SERVER']) {
-            sh 'ssh -o StrictHostKeyChecking=no ubuntu@3.109.169.48 docker stop java-web-app || true'
-            sh 'ssh ubuntu@65.1.107.71 docker rm java-web-app || true'
-            sh 'ssh ubuntu@65.1.107.71 docker rmi -f $(docker images -q) || true'
-            sh "ssh ubuntu@65.1.107.71 ${dockerRun}"
-        }  
+    stage('Run Docker Image on Server') {
+        // Define the docker run command
+        def dockerRun = 'docker run -d -p 8080:8080 --name java-web-app abhishek8288/java-web-app:6'
+
+        // Stop and remove any existing container
+        sh 'docker stop java-web-app || true'
+        sh 'docker rm java-web-app || true'
+
+        // Remove any old images (optional)
+        sh 'docker rmi -f $(docker images -q) || true'
+
+        // Run the new Docker container
+        sh "${dockerRun}"
     }
 }
