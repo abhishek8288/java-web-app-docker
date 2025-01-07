@@ -25,9 +25,9 @@ node {
          
         sshagent(['DOCKER_SERVER']) {
             sh 'ssh -o StrictHostKeyChecking=no ubuntu@3.109.169.48 docker stop java-web-app || true'
-            sh 'ssh ubuntu@3.109.169.48 docker rm java-web-app || true'
-            sh 'ssh ubuntu@3.109.169.48 docker rmi -f $(docker images -q) || true'
-            sh "ssh ubuntu@3.109.169.48 ${dockerRun}"
+            sh 'ssh ubuntu@65.1.107.71 docker rm java-web-app || true'
+            sh 'ssh ubuntu@65.1.107.71 docker rmi -f $(docker images -q) || true'
+            sh "ssh ubuntu@65.1.107.71 ${dockerRun}"
         }  
     }
 }
