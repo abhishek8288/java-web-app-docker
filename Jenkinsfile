@@ -22,7 +22,7 @@ node {
      
     stage('Run Docker Image on Server') {
         // Define the docker run command
-        def dockerRun = 'docker run -d -p 8080:8080 --name java-web-app abhishek8288/java-web-app:6'
+        def dockerRun = 'docker run -d -p 8081:8080 --name java-web-app abhishek8288/java-web-app:6'
 
         // Stop and remove any existing container
         sh 'docker stop java-web-app || true'
